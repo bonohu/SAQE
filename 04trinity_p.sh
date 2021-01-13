@@ -1,5 +1,6 @@
 #!/bin/sh
 # run Trinity using Docker
+# for multiple files, the simplest way is to cat these files.
 left=sample_1.fq.gz
 right=sample_2.fq.gz
 memory=128G
