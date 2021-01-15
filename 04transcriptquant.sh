@@ -21,5 +21,4 @@ time docker run -v`pwd`:`pwd` trinityrnaseq/trinityrnaseq \
  --left  $left \
  --right $right \
  --est_method salmon \
- --salmon_add_opts "-p $threads" \
  --prep_reference --output_dir $outdir
