@@ -1,11 +1,17 @@
 #!/bin/sh
 # run Trinity using Docker
 # for multiple files, the simplest way is to cat these files.
-left=sample_1.fq.gz
-right=sample_2.fq.gz
+
+# usage: sh 04transcriptquant.sh midgut1
+# name of sample from argument (example: midgut1)
+sample=$1
+# location of input files
+transcript=`pwd`/trinity_out_dir/Trinity.fasta
+left=`pwd`/trim_galore/${sample}_1_val_1.fq.gz
+right=`pwd`/trim_galore/${sample}_2_val_2.fq.gz
 memory=128G
 threads=12
-outdir=trinity_out_dir
+outdir=`pwd`/salmon_$sample
 #
 time docker run -v`pwd`:`pwd` trinityrnaseq/trinityrnaseq \
  /usr/local/bin/trinityrnaseq/util/align_and_estimate_abundance.pl \
@@ -15,7 +21,5 @@ time docker run -v`pwd`:`pwd` trinityrnaseq/trinityrnaseq \
  --left  $left \
  --right $right \
  --est_method salmon \
- --salmon_idx_type quasi \
  --salmon_add_opts "-p $threads" \
- --prep_reference --output_dir salmon_out
-
+ --prep_reference --output_dir $outdir
