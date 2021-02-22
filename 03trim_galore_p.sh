@@ -1,9 +1,10 @@
 #!/bin/sh
 fqdir=../fq # directory where fastq files are located
+threads=8
 mkdir trim_galore
 cd trim_galore
-for fq in $fqdir/*_1.fastq; 
-	do g="${fq%_1.fastq}"
+for fq in $fqdir/*_1.fastq.gz; 
+	do g="${fq%_1.fastq.gz}"
 	echo $g
-	time trim_galore -j 8 --gzip --fastqc --trim1 --paired $fqdir/${g}_1.fastq $fqdir/${g}_2.fastq
+	time trim_galore -j $threads --gzip --fastqc --trim1 --paired $fqdir/${g}_1.fastq.gz $fqdir/${g}_2.fastq.gz
 done
