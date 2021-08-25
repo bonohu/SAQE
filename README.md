@@ -1,13 +1,16 @@
 # SAQE
-Systematic Analysis for Quantification of Expression (SAQE) is a set of scripts for quantification of transcripts using RNA-seq.
+Systematic Analysis for Quantification of Everything (SAQE) is a set of scripts for quantification of transcripts using RNA-seq and metagenomic results.
 SAQE consists of several scripts to do the analyses.
 The number added in the name of script corresponds to the analysis bewlo.
 
-- 01 Retrieval of RNA-seq reads from the SRA database
-- 02 Conversion of data format and compression 
-- 03 Trimming and quality control of reads
-- 04 Transcriptome assembly by Trinity 
-- 05 Expression quantification by salmon
+- Expression
+    - 01 Retrieval of RNA-seq reads from the SRA database
+    - 02 Conversion of data format and compression 
+    - 03 Trimming and quality control of reads
+    - 04 Transcriptome assembly by Trinity 
+    - 05 Expression quantification by salmon
+- Metagenome
+    - 101 Kraken2 
 
 ## Requirements
 
