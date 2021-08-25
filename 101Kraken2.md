@@ -50,7 +50,7 @@ Specify {n} for the number of threads to use.
     $ docker run -it -v `pwd`:/kk2 staphb/kraken2 kraken2-build --build --threads {n} --db /kk2/db
 ```
 
-## 5. Classification & output
+### 5. Classification & output
 
 FASTQ file (`sample1.fq.gz`) in `fq` directory.
 The classification report will be written to `report.txt`.
