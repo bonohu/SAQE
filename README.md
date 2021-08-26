@@ -7,8 +7,8 @@ The number added in the name of script corresponds to the analysis bewlo.
     - 01 Retrieval of RNA-seq reads from the SRA database
     - 02 Conversion of data format and compression 
     - 03 Trimming and quality control of reads
-    - 04 Transcriptome assembly by Trinity 
-    - 05 Expression quantification by salmon
+    - 04 Transcriptome assembly by Trinity (skip if transcriptome reference is available)
+    - 05 Expression quantification by salmon ((direct) salmon or align_and_estimate_abundance.pl (AAEA) with salmon)
 - Metagenome
     - 101 Kraken2 
 
