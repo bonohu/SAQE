@@ -2,8 +2,8 @@
 
 ## Download annotated FASTA for Kraken2
 
-Annotated FASTA file for Kraken2 (`16S_kraken2.fasta`) is proved by our site.
-Please download from ...
+Annotated FASTA file for Kraken2 (`16S_kraken2.fasta`) is proved by [Life Science Database Archive](https://dbarchive.biosciencedbc.jp/index-e.html) at JST [National Bioscience Database Center (NBDC)](https://biosciencedbc.jp/en/).
+Please download from [the download site of 16S RNA sequence set for metagenomic analysis](https://dbarchive.biosciencedbc.jp/en/metagenomerefdb/download.html).
 
 ## Building library 
 
