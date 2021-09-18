@@ -2,7 +2,8 @@
 
 # 1. Set working directory 
 DBNAME="/Users/bono/kraken2/"
-DBREFFASTA="16S_kraken2.fasta"
+#DBREFFASTA="16S_kraken2.fasta"
+DBREFFASTA=$1
 THREADS=14
 
 # 2. Downloading required file(taxonomy and so on: `names.dmp` and `nodes.dmp`)
