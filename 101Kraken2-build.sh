@@ -11,7 +11,7 @@ kraken2-build --download-taxonomy --db $DBNAME
 #docker run -it -v `pwd`:/kk2 staphb/kraken2 kraken2-build --download-taxonomy --db /kk2/db
 
 # 3. Installing reference library  
-kraken2-build --add-to-library 16S_kraken2.fasta --threads {n} --db $DBNAME
+kraken2-build --add-to-library 16S_kraken2.fasta --threads $THREADS --db $DBNAME
 #docker run -it -v `pwd`:/kk2 staphb/kraken2 kraken2-build --add-to-library /kk2/$DBREFFASTA --threads $THREADS --db /kk2/db
 
 # 4. Building database
