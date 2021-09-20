@@ -50,7 +50,10 @@ Specify {n} for the number of threads to use.
     $ docker run -it -v `pwd`:/kk2 staphb/kraken2 kraken2-build --build --threads {n} --db /kk2/db
 ```
 
-### 5. Classification & output
+
+## Classification & Visualization
+
+### 1. run kraken2
 
 FASTQ file (`sample1.fq.gz`) in `fq` directory.
 The classification report will be written to `report.txt`.
@@ -60,7 +63,17 @@ The classification report will be written to `report.txt`.
 ```
 
 #### Docker version
-    
+
 ```
     $ docker run -it --env KRAKEN2_DB_PATH=`pwd`/db -v `pwd`:/kk2 staphb/kraken2 kraken2 --db /kk2/db --gzip-compressed /kk2/fq/sample1.fq.gz --report /kk2/F2s.txt --output - 
  ```
+
+### 2. visualization
+
+This part is not included in shell script because multiple results can be included and compared in this visualization.
+So, run the commands below separately.
+
+```
+$ pip install jinja2 pandas
+$ python 103karaken2_report_formatter.py -n sample_name_1 sample_name_2 -f sample_report_1 sample_report_2
+```
