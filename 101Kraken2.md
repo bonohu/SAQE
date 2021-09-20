@@ -75,5 +75,5 @@ So, run the commands below separately.
 
 ```
 $ pip install jinja2 pandas
-$ python 103karaken2_report_formatter.py -n sample_name_1 sample_name_2 -f sample_report_1 sample_report_2
+$ python karaken2_report_formatter.py -n sample_name_1 sample_name_2 -f sample_report_1 sample_report_2
 ```
