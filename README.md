@@ -9,8 +9,10 @@ The number added in the name of script corresponds to the analysis bewlo.
     - 03 Trimming and quality control of reads
     - 04 Transcriptome assembly by Trinity (skip if the transcriptome reference is available)
     - 05 Expression quantification by salmon ((direct) salmon or align_and_estimate_abundance.pl (AAEA) with salmon)
-- Metagenome
-    - 101 Kraken2 (currently only the protocol in markdown is available)
+- Metagenome: see [`101Kraken2.md`](./101Kraken2.md) for details
+    - 101 Building libarary Kraken2 for Kraken2
+    - 102 Running Kraken2 for classification
+    - 103 Visualizing multiple Kraken2 outputs for comparison 
 
 ## Requirements
 
