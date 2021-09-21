@@ -1,9 +1,10 @@
 #!/bin/sh
 
+# usage: 101Kraken2-build.sh DBNAME 
 # 1. Set working directory 
 DBNAME="/Users/bono/kraken2/"
 #DBREFFASTA="16S_kraken2.fasta"
-DBREFFASTA=$1
+DBREFFASTA=$1 # should not compressed; ungzip FASTA
 THREADS=14
 
 # 2. Downloading required file(taxonomy and so on: `names.dmp` and `nodes.dmp`)
