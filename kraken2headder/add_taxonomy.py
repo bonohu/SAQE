@@ -13,13 +13,13 @@ add the Kraken2 header with the corresponding taxonomy id to the record, and sav
 dogrun Inc. oec
 """
 
-acc2taxid = ""
 library_file_name = "./data//16S.fasta"
 taxonomy_db = "./data/acc_taxid"
 acc_tax_table = "acc_taxid"
 output = "./data/"
 source_file_name = "16S.fasta"
 library_file_name = "ref16s.fasta"
+unfetched_list = "./data/unfetched.txt"
 
 
 def add_taxonomy_header():
@@ -30,7 +30,6 @@ def add_taxonomy_header():
     taxid_map = read_acc2taxid()
     records = []
     unfetched = []
-    unfetched_list = "./data/unfetched.txt"
 
     with open(output + source_file_name, "r") as f:
         for rec in SeqIO.parse(f, "fasta"):
@@ -41,13 +40,35 @@ def add_taxonomy_header():
                 new_id = kraken_header + rec.id
                 new_description = re.split('\|', rec.description)
                 # 書き込む
-                new_rec = SeqRecord(Seq(seq), id=new_id, description=new_description[-1])
+                # Seq()の引数は文字列である必要がある。Seq objectをSeq()の引数にはできない
+                # new_rec = SeqRecord(Seq(seq), id=new_id, description=new_description[-1])
+                new_rec = SeqRecord(seq, id=new_id, description=new_description[-1])
                 records.append(new_rec)
             except KeyError:
                 unfetched.append(acc[0])
 
     fasta_writer(records)
-    log_writer(records, unfetched_list)
+    log_writer(unfetched)
+
+
+def check_id_conversion():
+    """
+    scan the 16s.fasta for all ids can be converted to tax id.
+    if not, record ids in log file
+    :return:
+    """
+    taxid_map = read_acc2taxid()
+    unfetched = []
+    with open(output + source_file_name, "r") as f:
+        for rec in SeqIO.parse(f, "fasta"):
+            seq = rec.seq
+            acc = re.split('_|\|', rec.id)
+            try:
+                # accessionをキーにtaxid_mapの値を取得
+                taxid_map[acc[0]]
+            except KeyError:
+                unfetched.append(acc[0])
+    log_writer(unfetched)
 
 
 def fasta_writer(records: list):
@@ -64,8 +85,8 @@ def fasta_writer(records: list):
     handle.close()
 
 
-def log_writer(lst, f):
-    with open(f, 'w') as t:
+def log_writer(lst):
+    with open(unfetched_list, 'w') as t:
         for i in lst:
             t.write(i+'\n')
 
@@ -81,7 +102,7 @@ def read_acc2taxid() -> dict:
     #    dict_acc_tax = {row[0].split(".")[0]: row[1] for row in reader}
     con = sqlite3.connect(taxonomy_db)
     cur = con.cursor()
-    cur.execute("SELECT * from {}").format(acc2taxid)
+    cur.execute("SELECT * from {}".format(acc_tax_table))
     res = cur.fetchall()
-    d = {x[0]: x[1] for x in res}
+    d = {x[0].split('.')[0]: x[1] for x in res}
     return d
