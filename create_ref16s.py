@@ -56,8 +56,13 @@ convert_accession.get_fasta_header(output + source_file_name)
 # taxonomy idを取得
 convert_accession.taxonomy_data_collector()
 
+# 保存したaccessionと取得したaccession-taxonomy IDのセットを突合し足りないセットが無いか確認する
+add_taxonomy.check_id_conversion()
+
+# 取得し損ねたaccession-taxidペアを再度取得しDBに追加する
+convert_accession.reexecute_conversion()
+
 # ヘッダに追加記述し保存
-# 現状1リードづつ書き出しているのでmultifasta形式で保存するように変更
 add_taxonomy.add_taxonomy_header()
 
 

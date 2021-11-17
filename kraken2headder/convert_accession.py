@@ -26,10 +26,11 @@ acc_tax_table = "acc_taxid"
 acc_tax_file = "./data/acc_taxid.txt"
 acc_id_table = "accs"
 ret_max = 200
-# "ret_start" is Normally 0, but iff getting the taxonomy id from Entrez stops in the middle,
+# "ret_start" is Normally 0, but if getting the taxonomy id from Entrez stops in the middle,
 # add the starting position for the retrieved id.
 ret_start = 0
-api_key = ""  # Enter in your ncbi api key.
+api_key = "e57e40ce20c955a0a79bc130ac6f5815dc08"  # Enter in your ncbi api key.
+unfetched_list = "./data/unfetched.txt"
 
 parser = argparse.ArgumentParser()
 parser.add_argument('-f', '--file', default=sample_file)
@@ -44,7 +45,7 @@ def taxonomy_data_collector():
     n = ret_start
     rows = ret_max
     l = int(rows)
-    while l > 0:
+    while l >= ret_max:
         res = seqid_loader(n, rows)
         seq_id_lst = [x[0] for x in res]
         seq_infos = get_data_esummary(seq_id_lst)
@@ -56,7 +57,7 @@ def taxonomy_data_collector():
     print("n: ", n,  "dt: ", datetime.datetime.now())
 
 
-def get_data_esummary(seq_ids):
+def get_data_esummary(seq_ids: list):
     """
     Post a query to epost and hit esummary via webenv to get the taxonomy id and accession.
     :param seq_ids:
@@ -79,6 +80,30 @@ def get_data_esummary(seq_ids):
     req2 = Request(url2)
     seq_infos = load_esummary(req2)
     return seq_infos
+
+
+def reexecute_conversion():
+    """
+    unfetcehedに記録された取り残したaccessionを再度eutilsで取得する
+    :return:
+    """
+    n = ret_start
+    rows = ret_max
+    l = int(rows)
+    while l >= ret_max:
+        accs = unfetched_accessions()[n: (int(n) + int(rows))]
+        seq_infos = get_data_esummary(accs)
+        # DBに追記
+        add_taxonomy(seq_infos)
+        l = len(accs)
+        n = n + rows
+
+
+def unfetched_accessions():
+    with open(unfetched_list, 'r') as f:
+        r = csv.reader(f)
+        acc = [x[0] for x in r]
+    return acc
 
 
 @retry(tries=3, delay=1)
@@ -128,11 +153,6 @@ def get_fasta_header(f):
     """
     Function to get accession list from FASTA file and save it in sqlite.
     """
-
-    ##
-    # Download 16S モジュール追加する！！！
-    ##
-
     seq_lst = []
     for e in fasta_entry(f):
         seq_id = re.split('_|\|', e.name)
@@ -164,6 +184,13 @@ def store_taxonomy(lst):
     con.commit()
 
 
+def add_taxonomy(lst):
+    con = sqlite3.connect(taxonomy_db)
+    cur = con.cursor()
+    cur.executemany('INSERT INTO {} (seq_id, tax_id) VALUES (?,?)'.format(acc_tax_table), lst)
+    con.commit()
+
+
 def output_acc_taxid_text():
     """
     deplicated
@@ -182,8 +209,11 @@ def output_acc_taxid_text():
     con.commit()
 
 
-# Get all the accessions from 16S.fasta and save them in sqlite
-# get_fasta_header()
+def check_coverage() -> list:
+    """
+    compare acc_id_table in taxonomy_d with acc_tax_table
+    based on it with taxonomy added, and return the missing accessions
+    :return: list
+    """
 
-# get the taxonomy, and store the Save the accession-taxonomy relationship data in sqlite.
-# taxonomy_data_collector()
+    return []

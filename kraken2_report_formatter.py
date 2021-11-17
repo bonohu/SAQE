@@ -2,6 +2,7 @@
 import csv
 import json
 import csv
+import os
 import pandas as pd
 from argparse import ArgumentParser
 from jinja2 import Environment, PackageLoader, select_autoescape, Template
@@ -22,6 +23,7 @@ parser.add_argument('-f', '--file_list', nargs='+', default=[])
 args = parser.parse_args()
 names = args.name_list
 files = args.file_list
+csv_path = 'html'
 
 classification_size = 40
 
@@ -68,6 +70,12 @@ def stacked_chart_formatter():
             rows.append(row)
         # write out csv
 
+        # 組成データはhtmlに直接埋め込むので、このブロックをコメントアウトしても可視化は行われる
+        # データを残したいケースもあるので'html'ディレクトリが無ければmkdir処理を行う
+        try:
+            os.makedir(csv_path)
+        except FileExistsError:
+            pass
         with open('./html/rank_{}.csv'.format(r), 'w') as f:
             writer = csv.writer(f)
             for row in rows:
