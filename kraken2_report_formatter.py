@@ -68,6 +68,8 @@ def stacked_chart_formatter():
             rows.append(row)
         # write out csv
 
+        # rowsはhtmlに直接埋め込むので、このブロックコメントアウトしても良い
+        # !!データを残したいケースもあるので'./html/'ディレクトリの確認とmkdir処理を行う
         with open('./html/rank_{}.csv'.format(r), 'w') as f:
             writer = csv.writer(f)
             for row in rows:
