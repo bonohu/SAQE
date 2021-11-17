@@ -12,20 +12,23 @@ import xml.etree.ElementTree as ET
 import datetime
 
 """
-Get the accession from the fasta header and convert it to a taxonomy id using Entrez.
+Get the accessions from the DDBJ 16S.fasta header and convert it to a taxonomy id using Entrez.
 Since Entrez is used to convert huge amounts of data, 
 the data will be stored in sqlite sequentially so that the conversion process can be interrupted in the middle.
 - get_fasta_header() : Save all accessions contained in fasta records in sqlite.
 - taxonomy_data_collector()：Store pairs of accession and taxonomy id data in sqlite
+dogrun Inc. oec
 """
 
 sample_file = "./16S.fasta" # 16S.fasta retrieve from DDBJ
-taxonomy_db = "./taxonomy_db"
-seq_tax_table = "sequence_taxonomy"
-seq_id_table = "sequence_ids"
+taxonomy_db = "./data/acc_taxid"
+acc_tax_table = "acc_taxid"
+acc_tax_file = "./data/acc_taxid.txt"
+acc_id_table = "accs"
 ret_max = 200
+# "ret_start" is Normally 0, but iff getting the taxonomy id from Entrez stops in the middle,
+# add the starting position for the retrieved id.
 ret_start = 0
-ncbi_nucleotide_base = 'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=nuccore&id={}&rettype=fasta&retmode=xml'
 api_key = ""  # Enter in your ncbi api key.
 
 parser = argparse.ArgumentParser()
@@ -35,14 +38,13 @@ args = parser.parse_args()
 
 def taxonomy_data_collector():
     """
-    Read the accession stored in sqlite, get the taxonomy, and store the
-    Save the accession-taxonomy relationship data in sqlite.
+    Read the accession stored in sqlite, get the taxonomy,
+    and store the accession-taxonomy relationship data in sqlite.
     """
     n = ret_start
     rows = ret_max
     l = int(rows)
     while l > 0:
-        print("n: ", n, "len: ", len(res), "dt: ", datetime.datetime.now())
         res = seqid_loader(n, rows)
         seq_id_lst = [x[0] for x in res]
         seq_infos = get_data_esummary(seq_id_lst)
@@ -50,6 +52,8 @@ def taxonomy_data_collector():
         store_taxonomy(seq_infos)
         l = len(res)
         n = n + rows
+
+    print("n: ", n,  "dt: ", datetime.datetime.now())
 
 
 def get_data_esummary(seq_ids):
@@ -91,28 +95,46 @@ def load_esummary(req: str):
         for e in root.iter('DocSum'):
             tax = e.find("Item[@Name='TaxId']").text
             acc = e.find('Item[@Name="AccessionVersion"]').text
-            org = e.find('Item[@Name="Title"]').text
-            seq_infos.append((acc, tax, org))
+            #org = e.find('Item[@Name="Title"]').text
+            seq_infos.append((acc, tax))
     return seq_infos
 
 
-def fasta_entry():
+def fasta_entry(input_f):
     """
     Parser for fasta records
     :return:
     """
-    with open(args.file) as fa:
+    with open(input_f) as fa:
         for e in SeqIO.parse(fa, "fasta"):
             # seqIO.parse() returns the properties of objects such as seq,id,description
             yield e
 
 
-def get_fasta_header():
+def store_seqid(lst):
+    con = sqlite3.connect(taxonomy_db)
+    cur = con.cursor()
+    q = 'DROP TABLE IF EXISTS {}'.format(acc_id_table)
+    cur.execute(q)
+    q = 'CREATE TABLE IF NOT EXISTS {} (acc )'.format(acc_id_table)
+    cur.execute(q)
+    con.commit()
+
+    cur.executemany('INSERT INTO {} (acc) VALUES (?)'.format(acc_id_table), lst)
+    con.commit()
+
+
+def get_fasta_header(f):
     """
     Function to get accession list from FASTA file and save it in sqlite.
     """
+
+    ##
+    # Download 16S モジュール追加する！！！
+    ##
+
     seq_lst = []
-    for e in fasta_entry():
+    for e in fasta_entry(f):
         seq_id = re.split('_|\|', e.name)
         seq_lst.append([seq_id[0]])
     store_seqid(seq_lst)
@@ -125,7 +147,7 @@ def seqid_loader(start:int=0, rows:int=10) -> List[str]:
     """
     con = sqlite3.connect(taxonomy_db)
     cur = con.cursor()
-    q = 'SELECT * from {}'.format(seq_id_table)
+    q = 'SELECT * from {}'.format(acc_id_table)
     cur.execute(q)
     res = cur.fetchall()
     return res[start:(start + rows)]
@@ -134,27 +156,34 @@ def seqid_loader(start:int=0, rows:int=10) -> List[str]:
 def store_taxonomy(lst):
     con = sqlite3.connect(taxonomy_db)
     cur = con.cursor()
-    q = 'CREATE TABLE IF NOT EXISTS {} (seq_id, tax_id, sci_name)'.format(seq_tax_table)
+    q = 'CREATE TABLE IF NOT EXISTS {} (seq_id, tax_id)'.format(acc_tax_table)
     cur.execute(q)
     con.commit()
 
-    cur.executemany('INSERT INTO {} (seq_id, tax_id, sci_name) VALUES (?,?,?)'.format(seq_tax_table), lst)
+    cur.executemany('INSERT INTO {} (seq_id, tax_id) VALUES (?,?)'.format(acc_tax_table), lst)
     con.commit()
 
 
-def store_seqid(lst):
+def output_acc_taxid_text():
+    """
+    deplicated
+    直接sqliteからdictに変換することに
+    :return:
+    """
     con = sqlite3.connect(taxonomy_db)
     cur = con.cursor()
-    q = 'CREATE TABLE IF NOT EXISTS {} (seq_id)'.format(seq_id_table)
+    q = 'SELECT * FROM {}'.format(acc_tax_table)
     cur.execute(q)
-    con.commit()
+    rows = cur.fetchall()
+    with open(acc_tax_file, "w") as f:
+        writer = csv.writer(f, delimiter="\t")
+        writer.writerows(rows)
 
-    cur.executemany('INSERT INTO {} (seq_id) VALUES (?)'.format(seq_id_table), lst)
     con.commit()
 
 
 # Get all the accessions from 16S.fasta and save them in sqlite
-get_fasta_header()
+# get_fasta_header()
 
 # get the taxonomy, and store the Save the accession-taxonomy relationship data in sqlite.
-taxonomy_data_collector()
+# taxonomy_data_collector()
