@@ -29,7 +29,7 @@ ret_max = 200
 # "ret_start" is Normally 0, but if getting the taxonomy id from Entrez stops in the middle,
 # add the starting position for the retrieved id.
 ret_start = 0
-api_key = "e57e40ce20c955a0a79bc130ac6f5815dc08"  # Enter in your ncbi api key.
+api_key = ""  # Enter in your ncbi api key.
 unfetched_list = "./data/unfetched.txt"
 
 parser = argparse.ArgumentParser()
