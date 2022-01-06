@@ -1,6 +1,9 @@
 #!/bin/sh
 # GetRefs: download reference protein datasets
-
+# specify directory for downloaded datasets
+dir=db 
+#
+cd $dir
 # human
 curl -O https://ftp.ensembl.org/pub/current_fasta/homo_sapiens/pep/Homo_sapiens.GRCh38.pep.all.fa.gz
 # mouse
