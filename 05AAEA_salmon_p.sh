@@ -8,14 +8,14 @@ threads=28
 transcript=trinity_out_dir/Trinity.fasta #name of transcript
 outdir=salmon_out
 #
-time docker run --rm -v `pwd`:`pwd` trinityrnaseq/trinityrnaseq \
+time docker run --rm -v `pwd`:`pwd` trinityrnaseq/trinityrnaseq:2.11.0 \
     /usr/local/bin/trinityrnaseq/util/align_and_estimate_abundance.pl \
     --thread_count $threads \
     --transcripts `pwd`/$transcript \
+    --trinity_mode \
     --seqType fq \
     --left  `pwd`/$left \
     --right `pwd`/$right \
     --est_method salmon \
-    --salmon_add_opts "--validateMappings" \
     --prep_reference \
     --output_dir `pwd`/$outdir
