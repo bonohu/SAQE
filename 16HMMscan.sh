@@ -14,4 +14,4 @@ $gzip -d Pfam-A.hmm.gz
 # Make index
 hmmpress Pfam-A.hmm
 # Running hmmscan
-% hmmscan -o hmmscan-${query}.txt --cpu $thre -E $evalue Pfam-A.hmm $query
+hmmscan -o hmmscan-raw-${query}.txt --tblout hmmscan-tbl-${query}.txt --cpu $thre -E $evalue Pfam-A.hmm $query
