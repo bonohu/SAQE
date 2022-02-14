@@ -1,11 +1,11 @@
 #!/bin/sh
 # exec ggsearch for global alignment
 # name of query
-query=query.fasta
+query=$1
 # name of db
-db=db.fasta
+db=$2
 # threads to use
-thre=4
+thre=7
 # cutoff threshold (E-value)
 evalue=0.1
 # number of alignments
@@ -16,6 +16,6 @@ ggsearch=ggsearch36
 out=ggsearch_${query}-${db}.txt
 gzip=pigz
 # run ggsearch
-$ggsesarch -Q -T $thre -d $d -E $evalue $query $db \
+time $ggsearch -Q -T $thre -d $d -E $evalue $query $db \
 | $gzip \
 > $out
