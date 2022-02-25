@@ -13,9 +13,9 @@ d=1
 # name of program
 ggsearch=ggsearch36
 # outfile
-out=ggsearch_${query}-${db}.txt
+out=ggsearch_${query}-${db}.txt.gz
 gzip=pigz
 # run ggsearch
-time $ggsearch -Q -T $thre -d $d -E $evalue $query $db \
+time $ggsearch -Q -T $thre -d $d -m10 -E $evalue $query $db \
 | $gzip \
 > $out
