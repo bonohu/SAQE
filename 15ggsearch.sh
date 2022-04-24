@@ -5,7 +5,7 @@ query=$1
 # name of db
 db=$2
 # threads to use
-thre=7
+thre=8
 # cutoff threshold (E-value)
 evalue=0.1
 # number of alignments
