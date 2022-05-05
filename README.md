@@ -31,4 +31,8 @@ The number added in the name of script corresponds to the analysis bewlo.
 
 Cite the paper below for the citation.
 
+- For expression part:
 > Bono H. Meta-Analysis of Oxidative Transcriptomes in Insects. *Antioxidants*. 2021; 10(3):345. [`https://doi.org/10.3390/antiox10030345`](https://doi.org/10.3390/antiox10030345)
+- For functional annotation part: To be submitted.
+- For metagenome part:
+> Oec N & Bono H. Rapid metagenomic workflow using annotated 16S RNA dataset. *BioHackrXiv* [`https://doi.org/10.37044/osf.io/gbt8p`](https://doi.org/10.37044/osf.io/gbt8p)
