@@ -3,13 +3,13 @@ Systematic Analysis for Quantification of Everything (SAQE) is a set of scripts 
 SAQE consists of several scripts to do the analyses.
 The number added in the name of script corresponds to the analysis bewlo.
 
-- Expression(RNA-Seq)
+- Expression (original SAQE(Systematic Analysis for Quantification of Expression))
     - 01 Retrieval of RNA-seq reads from the SRA database
     - 02 Conversion of data format and compression 
     - 03 Trimming and quality control of reads
     - 04 Transcriptome assembly by Trinity (skip if the transcriptome reference is available)
     - 05 Expression quantification by salmon ((direct) salmon or align_and_estimate_abundance.pl (AAEA) with salmon)
-- Functional annotation 
+- Functional annotation (Fanflow) 
     - 11 Translating cDNA into protein sequence
     - 12 Getting reference protein sequences
     - 13 Making BLAST index
