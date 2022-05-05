@@ -9,6 +9,13 @@ The number added in the name of script corresponds to the analysis bewlo.
     - 03 Trimming and quality control of reads
     - 04 Transcriptome assembly by Trinity (skip if the transcriptome reference is available)
     - 05 Expression quantification by salmon ((direct) salmon or align_and_estimate_abundance.pl (AAEA) with salmon)
+- Functional annotation 
+    - 11 Translating cDNA into protein sequence
+    - 12 Getting reference protein sequences
+    - 13 Making BLAST index
+    - 14 Executing BLAST search (BLASTP)
+    - 15 Executing global alignment search by ggsearch and extract needed information for further studies
+    - 16 Getting Pfam and running HMMscan with parser for the functional annotation 
 - Metagenome: see [`101Kraken2.md`](./101Kraken2.md) for details
     - 101 Building libarary Kraken2 for Kraken2
     - 102 Running Kraken2 for classification
