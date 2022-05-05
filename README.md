@@ -12,8 +12,7 @@ The number added in the name of script corresponds to the analysis bewlo.
 - Functional annotation (Fanflow) 
     - 11 Translating cDNA into protein sequence
     - 12 Getting reference protein sequences
-    - 13 Making BLAST index
-    - 14 Executing BLAST search (BLASTP)
+    - 13 Making BLAST index & Executing BLAST search (BLASTP)
     - 15 Executing global alignment search by ggsearch and extract needed information for further studies
     - 16 Getting Pfam and running HMMscan with parser for the functional annotation 
 - Metagenome: see [`101Kraken2.md`](./101Kraken2.md) for details
