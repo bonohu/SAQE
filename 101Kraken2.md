@@ -9,7 +9,7 @@ Please download from [the download site of 16S RNA sequence set for metagenomic 
 
 ### 1. Set working directory
 ```
-    $ DBNAME="/home/{yourname}/kraken2/"
+    $ DBNAME="/home/{yourname}/kraken2/db/"
 ```
 
 ### 2. Downloading required file(taxonomy and so on: `names.dmp` and `nodes.dmp`)
