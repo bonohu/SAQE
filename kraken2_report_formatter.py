@@ -147,17 +147,20 @@ def stacked_chart_formatter():
         dataset["O"] = O;
         
         function loadsamples(f) {
+                // columns\n data0 \n data1を入力としてcolumnsとkey:valueのobjectを返す
                 var data = d3.csvParse(dataset[f], (d, _, columns) => {
                         var total = 100;
                         d.total = total;
                         return d
                 });
-                
                 var keys = data.columns.slice(1);
 
+                // 
                 data.sort(function (a, b) {
                     return b.total - a.total;
                 });
+
+                // domain設定（x:サンプル, y:値, z: taxonomy)
                 x.domain(data.map(function (d) {
                     return d.library;
                 }));
@@ -173,17 +176,27 @@ def stacked_chart_formatter():
                     .enter().append("g")
                     .attr("fill", function (d) {
                         if (d.key == "others"){
-                            return "#777777"
+                            return "#cccccc"
                         }else {
-                            return z(d.key);
+                            return z(d.key); 
                         }
                     })
+                    .attr("class", function(d,i){
+                        return "n" + (keys.length - i)
+                    })
+                    .attr("data-name", function(d){
+                        return d.key
+                    })
                     .selectAll("rect")
-                    .data(function (d) {
+                    .data(function (d,i) {
+                        // サンプル内のindexをここまで保持する
+                        // dは 2サンプル分の(始点,終点,全体のobject) な配列を含む配列
+                        // taxonomyをキーにサンプルの持つ値がマトマメラれる
                         return d;
                     })
                     .enter().append("rect")
                     .attr("x", function (d) {
+                        // 1サンプル分ずつ処理
                         return x(d.data.library);
                     })
                     .attr("y", function (d) {
@@ -192,7 +205,23 @@ def stacked_chart_formatter():
                     .attr("height", function (d) {
                         return y(d[0]) - y(d[1]);
                     })
-                    .attr("width", x.bandwidth());
+                    .attr("width", x.bandwidth())
+                    .on("mouseover", function(){
+                        d3.selectAll("." + this.parentNode.className.baseVal)
+                        .style("stroke-opacity",1)
+                        .attr("stroke", "#FE5000")
+                        .attr("stroke-width", 3)
+                    })
+                    .on("mouseout", function(){
+                        d3.selectAll("." + this.parentNode.className.baseVal)
+                        .style("stroke-opacity", 0)
+                    })
+                    .on("click", function(d){
+                        var taxonomy_name = this.parentNode.getAttribute("data-name")
+                        var taxonomy_name = taxonomy_name.replace(/\s+/g,"+")
+                        var base_url = "https://www.ncbi.nlm.nih.gov/taxonomy/?term="
+                        window.open(base_url + taxonomy_name, "_blank")
+                    });
 
                 g.append("g")
                     .attr("class", "axis")
@@ -212,6 +241,7 @@ def stacked_chart_formatter():
                     .text("Population");
 
                 // scientific name group
+                // keyと順位が渡される
                 var legend = g.append("g")
                     .attr("font-family", "sans-serif")
                     .attr("font-size", 12)
@@ -220,14 +250,33 @@ def stacked_chart_formatter():
                     .data(keys.slice().reverse())
                     .enter().append("g")
                     .attr("transform", function (d, i) {
-                        return "translate(250," + (i * 20) + ")";
+                        return "translate(250," + (i * 20) + ")"
                     });
 
                 legend.append("rect")
                     .attr("x", width - 19)
                     .attr("width", 19)
                     .attr("height", 19)
-                    .attr("fill", z);
+                    .attr("fill", z)
+                    .attr("class", function(d, i){
+                        return ("n" + String(Number(i)+1))
+                    })
+                    .on("mouseover", function(){
+                        d3.selectAll("." + this.className.baseVal)
+                        .style("stroke-opacity",1)
+                        .attr("stroke", "#FE5000")
+                        .attr("stroke-width", 3)
+                    })
+                    .on("mouseout", function(){
+                        d3.selectAll("." + this.className.baseVal)
+                        .style("stroke-opacity", 0)
+                    })
+                    .on("click", function(d){
+                        var taxonomy_name = d
+                        taxonomy_name = taxonomy_name.replace(/\s+/g,"+")
+                        var base_url = "https://www.ncbi.nlm.nih.gov/taxonomy/?term="
+                        window.open(base_url + taxonomy_name, "_blank")
+                    });
 
                 // scientific name
                 legend.append("text")
