@@ -27,6 +27,7 @@ files = args.file_list
 
 csv_path = 'html'
 
+# 上位何位まで表示するか定義
 classification_size = 40
 
 config = dict()
