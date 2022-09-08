@@ -77,7 +77,7 @@ def stacked_chart_formatter():
         # データを残したいケースもあるので'html'ディレクトリが無ければmkdir処理を行う
         try:
             # os.makedir(csv_path)
-            os.mkdir(csv_path)
+
         except FileExistsError:
             pass
         with open('./html/rank_{}.csv'.format(r), 'w') as f:

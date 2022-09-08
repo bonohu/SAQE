@@ -2,7 +2,7 @@ cwlVersion: v1.0
 class: CommandLineTool
 hints:
   DockerRequirement:
-    dockerPull: trinityrnaseq/trinityrnaseq:2.13.1
+    dockerPull: trinityrnaseq/trinityrnaseq:2.11.0
 requirements:
   - class: InlineJavascriptRequirement
   - class: InitialWorkDirRequirement
