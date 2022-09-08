@@ -1,99 +1,4 @@
-# -*- coding: utf8 -*-
-import csv
-import os
-import pandas as pd
-from argparse import ArgumentParser
-from jinja2 import Environment, PackageLoader, select_autoescape, Template
-import subprocess
 
-"""
-Convert Kraken2 report to DataFrame, format it, and write it out as tsv for d3.js stacked chart.
-
-usage:
-$ python kraken2_report_formatter.py -n <samples> -f <files>
-$ python kraken2_report_formatter.py -n sample1 sample2 -f ./sample1.kreport ./sample2.kreport 
-
-"""
-parser = ArgumentParser()
-# -n につづけて入力するファイルをスペース区切りで指定する
-parser.add_argument('-n', '--name_list', nargs='+', default=[])
-parser.add_argument('-f', '--file_list', nargs='+', default=[])
-args = parser.parse_args()
-
-# サンプル名の定義
-names = args.name_list
-# レポートファイルの定義
-files = args.file_list
-
-csv_path = 'html'
-
-classification_size = 40
-
-config = dict()
-ranks = ["S", "G", "F", "O"]
-
-
-def stacked_chart_formatter():
-    # generate datasets for each rank
-    formated_data = {}
-    for r in ranks:
-        # 2. sort first sample
-        df0 = pd.read_table(files[0], names=("percentage", "n1", "n2", "rank", "tax_id", "name"))
-        df0_by_rank = df0[df0["rank"] == r]
-        d0 = df0_by_rank.sort_values(by=['percentage'], ascending=False)
-        # 2.2 sort all_taxonomy by first sample
-        all_taxo = [str.strip(x) for x in d0["name"].tolist()]
-        all_taxo = all_taxo[0:classification_size]
-        # 3 get percentage
-        rows = []
-        header = all_taxo.copy()
-        header.insert(0, "library")
-        header.append("others")
-        rows.append(header)
-        for i,n in enumerate(names):
-            row = []
-            df = pd.read_table(files[i], names=("percentage", "n1", "n2", "rank", "tax_id", "name"))
-            df["name"] = df["name"].str.strip()
-            dbf = df[df["rank"] == r]
-            # データフレームの0:30を切り取る
-            for t in all_taxo:
-                d = dbf[dbf["name"] == str.strip(t)]
-                # 1行のdataframeの5番目のnameカラムの値を取得
-                try:
-                    row.append(d.iat[0,0])
-                except:
-                    row.append(0)
-            # 100 - リストした分類のpercentage総量をothersのpercentageとし末尾に追加
-            val_others = sum(row)
-            row.append(100-val_others)
-
-            row.insert(0, n)
-            row = [str(x) for x in row]
-            rows.append(row)
-        # write out csv
-
-        # 組成データはhtmlに直接埋め込むので、このブロックをコメントアウトしても可視化は行われる
-        # データを残したいケースもあるので'html'ディレクトリが無ければmkdir処理を行う
-        try:
-            # os.makedir(csv_path)
-            os.mkdir(csv_path)
-        except FileExistsError:
-            pass
-        with open('./html/rank_{}.csv'.format(r), 'w') as f:
-            writer = csv.writer(f)
-            for row in rows:
-                writer.writerow(row)
-
-        # 改行コード付きカンマ区切り文字列を追加する
-        s = ""
-        for row in rows:
-            s = s + ",".join(row) + "\\n"
-
-        formated_data[r] = s
-
-    # HTMLに直接記述する場合
-    # 5. htmlを生成し、ファイルを開く
-    template_base = '''
     <!DOCTYPE html>
     <style>
     
@@ -135,13 +40,13 @@ def stacked_chart_formatter():
             .range(d3.schemeCategory20b.concat(new Array(50).fill("#888888")));
         
 
-        var S = "{{ data_s }}"
+        var S = "library,Bifidobacterium longum,Faecalibacterium prausnitzii,Phocaeicola vulgatus,Anaerostipes hadrus,[Ruminococcus] gnavus,Veillonella parvula,Lachnospiraceae bacterium,Bifidobacterium pseudocatenulatum,Blautia argi,Bifidobacterium dentium,Veillonella dispar,Bifidobacterium scardovii,Bifidobacterium breve,Faecalibacterium sp.,Bacteroides ovatus,Butyrivibrio fibrisolvens,Clostridium sp.,Bacillus subtilis,Anaerostipes caccae,Veillonella atypica,Blautia wexlerae,Tyzzerella nexilis,Bifidobacterium adolescentis,Bifidobacterium bifidum,Bifidobacterium pseudolongum,Clostridium sp. AT4,Dorea longicatena,Phocaeicola dorei,[Clostridium] symbiosum,Flavonifractor plautii,Bifidobacterium catenulatum,Blautia hansenii,Bacteroides cellulosilyticus,[Clostridium] scindens,Robinsoniella peoriensis,Actinomyces oris,Klebsiella pneumoniae,Streptococcus salivarius,Leuconostoc pseudomesenteroides,Bifidobacterium animalis,others\nRef16s,23.8,7.77,7.36,5.46,4.63,3.34,3.3,2.28,1.8,1.49,1.31,1.29,1.28,1.2,1.11,0.89,0.88,0.76,0.76,0.74,0.66,0.65,0.64,0.62,0.57,0.56,0.56,0.43,0.42,0.41,0.41,0.38,0.38,0.36,0.35,0.33,0.32,0.31,0.3,0.27,19.62000000000002\nMinikraken,27.72,12.25,0,6.25,0,1.29,0,0.58,0,0.03,0,0.02,0.04,0,1.69,0.02,0,0.03,0,0,0,0,0.29,0.16,0.04,0,0,0,0,0.51,0,1.17,0.67,0,0,0,0.17,0.03,0,2.14,44.9\n"
 
-        var G = "{{ data_g }}"
+        var G = "library,Bifidobacterium,Faecalibacterium,Phocaeicola,Veillonella,Anaerostipes,Mediterraneibacter,Blautia,Clostridium,Bacteroides,Dorea,Streptococcus,Bacillus,Lachnoclostridium,Butyrivibrio,Tyzzerella,Leuconostoc,Flavonifractor,Roseburia,Actinomyces,Robinsoniella,Klebsiella,Enterocloster,Romboutsia,Erysipelatoclostridium,Escherichia,Enterococcus,Intestinibacter,Clostridioides,Staphylococcus,Massilimicrobiota,Peptostreptococcus,Hungatella,Faecalicatena,Lacrimispora,Limosilactobacillus,Enterobacter,Lactiplantibacillus,Gardnerella,Eggerthella,Terrisporobacter,others\nRef16s,34.43,12.51,8.58,6.72,6.36,4.8,3.93,2.39,2.11,1.22,1.16,1.06,0.99,0.9,0.65,0.47,0.41,0.37,0.36,0.35,0.35,0.3,0.28,0.27,0.25,0.21,0.19,0.18,0.16,0.15,0.13,0.11,0.11,0.1,0.08,0.08,0.08,0.07,0.07,0.07,6.990000000000052\nMinikraken,36.69,12.25,0,3.51,6.25,0,5.43,2.11,10.76,0,1.35,1.16,3.32,0.15,0,0.01,0.51,0.1,0.0,0,0.2,0,0,0,0.17,0.14,0,0.43,0.13,0,0,0,0,0,0,0.02,0,0.03,0.07,0,15.210000000000008\n"
 
-        var F = "{{ data_f }}"
+        var F = "library,Bifidobacteriaceae,Lachnospiraceae,Ruminococcaceae,Veillonellaceae,Clostridiaceae,Bacteroidaceae,Streptococcaceae,Bacillaceae,Peptostreptococcaceae,Enterobacteriaceae,Erysipelotrichaceae,Leuconostocaceae,Actinomycetaceae,Lactobacillaceae,Enterococcaceae,Staphylococcaceae,Eggerthellaceae,Propionibacteriaceae,Prevotellaceae,Carnobacteriaceae,Eubacteriaceae,Corynebacteriaceae,Micrococcaceae,Rikenellaceae,Porphyromonadaceae,Tannerellaceae,Aeromonadaceae,Pseudomonadaceae,Moraxellaceae,Coriobacteriaceae,Selenomonadaceae,Acidaminococcaceae,Peptoniphilaceae,Sutterellaceae,others\nRef16s,34.52,25.15,13.09,6.72,2.53,2.11,1.19,1.15,1.07,0.74,0.5,0.49,0.37,0.31,0.21,0.16,0.07,0.04,0.03,0.01,0.01,0.01,0.01,0.01,0.01,0.01,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,9.479999999999976\nMinikraken,36.91,21.01,12.86,4.6,2.43,10.76,1.36,1.2,0.88,0.63,0.09,0.02,0.0,0.14,0.14,0.17,0.07,0.01,0.0,0.01,1.08,0.01,0.0,0.01,0,0,0.0,0.01,0.0,0,0.04,0.0,0.01,0,5.549999999999969\n"
 
-        var O = "{{ data_o }}"
+        var O = "library,Clostridiales,Bifidobacteriales,Bacteroidales,Veillonellales,Lactobacillales,Bacillales,Enterobacterales,Erysipelotrichales,Actinomycetales,Eggerthellales,Propionibacteriales,Corynebacteriales,Micrococcales,Tissierellales,Coriobacteriales,Acidaminococcales,Selenomonadales,Pseudomonadales,Aeromonadales,Burkholderiales,others\nRef16s,41.99,34.52,10.8,6.72,2.28,1.35,0.74,0.5,0.37,0.07,0.04,0.01,0.01,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.5999999999999943\nMinikraken,40.96,36.91,10.8,4.6,1.73,1.63,0.81,0.09,0.0,0.07,0.01,0.03,0.01,0.01,0.0,0.0,0.11,0.01,0.0,0.01,2.2099999999999795\n"
 
         var dataset = {};
         dataset["S"] = S;
@@ -253,7 +158,7 @@ def stacked_chart_formatter():
                     .data(keys.slice().reverse())
                     .enter().append("g")
                     .attr("transform", function (d, i) {
-                        return "translate(275," + (i * 20) + ")"
+                        return "translate(250," + (i * 20) + ")"
                     });
 
                 legend.append("rect")
@@ -293,7 +198,7 @@ def stacked_chart_formatter():
                 // rank switch
                 var ranks = ["S", "G", "F", "O"]
                 var switches = g.append("g")
-                    .attr("width", 285)
+                    .attr("width", 300)
                     .attr("hight", 50)
                     .attr("class", "switch")
                     .attr("fill", "black")
@@ -324,13 +229,4 @@ def stacked_chart_formatter():
     </script>
     </html>
     
-    '''
-    population = {}
-    template = Template(template_base)
-    output = template.render(data_s=formated_data["S"], data_g=formated_data["G"], data_f=formated_data["F"], data_o=formated_data["O"])
-    with open("./d3.html", "w") as outh:
-        outh.write(output)
-
-
-stacked_chart_formatter()
-subprocess.run(['open', './d3.html'])
+    

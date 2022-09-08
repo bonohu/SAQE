@@ -1,0 +1,8 @@
+biopython==1.79
+Jinja2==3.1.2
+MarkupSafe==2.1.1
+numpy==1.23.2
+pandas==1.4.4
+python-dateutil==2.8.2
+pytz==2022.2.1
+six==1.16.0
