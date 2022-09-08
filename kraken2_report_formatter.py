@@ -1,7 +1,5 @@
 # -*- coding: utf8 -*-
 import csv
-import json
-import csv
 import os
 import pandas as pd
 from argparse import ArgumentParser
@@ -21,10 +19,15 @@ parser = ArgumentParser()
 parser.add_argument('-n', '--name_list', nargs='+', default=[])
 parser.add_argument('-f', '--file_list', nargs='+', default=[])
 args = parser.parse_args()
+
+# サンプル名の定義
 names = args.name_list
+# レポートファイルの定義
 files = args.file_list
+
 csv_path = 'html'
 
+# 上位何位まで表示するか定義
 classification_size = 40
 
 config = dict()
@@ -73,7 +76,8 @@ def stacked_chart_formatter():
         # 組成データはhtmlに直接埋め込むので、このブロックをコメントアウトしても可視化は行われる
         # データを残したいケースもあるので'html'ディレクトリが無ければmkdir処理を行う
         try:
-            os.mkdir(csv_path)
+            # os.makedir(csv_path)
+
         except FileExistsError:
             pass
         with open('./html/rank_{}.csv'.format(r), 'w') as f:
@@ -115,7 +119,7 @@ def stacked_chart_formatter():
     <script>
     
         var svg = d3.select("svg"),
-            margin = {top: 20, right: 250, bottom: 70, left: 40},
+            margin = {top: 20, right: 300, bottom: 70, left: 40},
             width = +svg.attr("width") - margin.left - margin.right,
             height = +svg.attr("height") - margin.top - margin.bottom,
             g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
@@ -129,7 +133,7 @@ def stacked_chart_formatter():
             .rangeRound([height, 0]);
     
         var z = d3.scaleOrdinal()
-            .range(d3.schemeTableau10);
+            .range(d3.schemeCategory20b.concat(new Array(50).fill("#888888")));
         
 
         var S = "{{ data_s }}"
@@ -147,7 +151,7 @@ def stacked_chart_formatter():
         dataset["O"] = O;
         
         function loadsamples(f) {
-                // columns\n data0 \n data1を入力としてcolumnsとkey:valueのobjectを返す
+                // columns data0 data1を入力としてcolumnsとkey:valueのobjectを返す
                 var data = d3.csvParse(dataset[f], (d, _, columns) => {
                         var total = 100;
                         d.total = total;
@@ -250,7 +254,7 @@ def stacked_chart_formatter():
                     .data(keys.slice().reverse())
                     .enter().append("g")
                     .attr("transform", function (d, i) {
-                        return "translate(250," + (i * 20) + ")"
+                        return "translate(275," + (i * 20) + ")"
                     });
 
                 legend.append("rect")
@@ -290,7 +294,7 @@ def stacked_chart_formatter():
                 // rank switch
                 var ranks = ["S", "G", "F", "O"]
                 var switches = g.append("g")
-                    .attr("width", 300)
+                    .attr("width", 285)
                     .attr("hight", 50)
                     .attr("class", "switch")
                     .attr("fill", "black")
