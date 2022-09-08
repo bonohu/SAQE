@@ -13,14 +13,15 @@ add the Kraken2 header with the corresponding taxonomy id to the record, and sav
 dogrun Inc. oec
 """
 
-# ex. "./data/16S.fasta", "./data/silva_kraken2.fasta"
-library_file_name = ""
 # output directory ex. "./data/"
-output = "./data/"
-# ex. "16S.fasta", "SILVA_138.1_SSURef_NR99_tax_silva.fasta"
-source_file_name = "16S.fasta"
-# out put library name ex. "ref16s.fasta", "silva_kraken2.fasta"
-library_file_name = "ref16s.fasta"
+output = "./"
+# 16Sの場合 ex. "16S.fasta",
+# 18S(silva)の場合 ex. "SILVA_138.1_SSURef_NR99_tax_silva.fasta"
+source_file_name = "SILVA_138.1_SSURef_NR99_tax_silva.fasta"
+# ibrary name
+# 16Sの場合 ex. "ref16s.fasta",
+# 18S (silva)の場合 ex. "silva_kraken2.fasta"
+library_file_name = "silva_kraken2.fasta"
 
 # nucl_gb.accession2taxidのパス。このファイルをDL後本モジュールの処理は実行する
 accession2taxonomy_file = "./data/nucl_gb.accession2taxid"
