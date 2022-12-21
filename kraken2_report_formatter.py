@@ -76,7 +76,7 @@ def stacked_chart_formatter():
         # 組成データはhtmlに直接埋め込むので、このブロックをコメントアウトしても可視化は行われる
         # データを残したいケースもあるので'html'ディレクトリが無ければmkdir処理を行う
         try:
-            # os.makedir(csv_path)
+            os.mkdir(csv_path)
 
         except FileExistsError:
             pass

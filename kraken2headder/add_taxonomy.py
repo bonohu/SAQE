@@ -47,6 +47,8 @@ def add_taxonomy_header():
     Insert kraken:taxid prefix and taxonomy id in the header of FASTA records
     :return:
     """
+
+    # Todo: >kraken:taxid|xxx のみ残すようなヘッダを試してみる
     # ファイルをcsv.DictReaderで{accession: taxonomy id,..}に展開する
     taxid_map = convert_tsv2dict()
     records = []
