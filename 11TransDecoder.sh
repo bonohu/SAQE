@@ -5,5 +5,5 @@
 transcript=Trinity.fasta
 
 # Run transdecoder 
-TransDecoder.LogOrfs $transcript
-TransDecoder.Predict $transcript
+TransDecoder.LongOrfs -t $transcript
+TransDecoder.Predict -t $transcript
